@@ -6,45 +6,45 @@
 O projeto "Ademir" é um bot criado para melhorar a experiência de comunidades focadas em bem-estar. Ele permite reproduzir músicas, criar macros, efetuar ações de moderação em massa e conversar com a API do ChatGPT.
 
 ## Funcionalidades
-[ ] Falar com o bot apenas mencionando o mesmo
-[ ] Reprodução/download de músicas/playlists em canal de audio
-[ ] Suporte a links de vídeo do YouTube
-[ ] Suporte a links de musicas do Spotify
-[ ] Suporte a links de albuns do Spotify
-[ ] Suporte a links de playlists públicas do Spotify
-[ ] Suporte a links de playlists públicas do YouTube
-[ ] Denunciar um usuário através do comando `/denunciar`
-[ ] Denunciar uma mensagem com o menu de contexto
+- [ ] Falar com o bot apenas mencionando o mesmo
+- [ ] Reprodução/download de músicas/playlists em canal de audio
+- [ ] Suporte a links de vídeo do YouTube
+- [ ] Suporte a links de musicas do Spotify
+- [ ] Suporte a links de albuns do Spotify
+- [ ] Suporte a links de playlists públicas do Spotify
+- [ ] Suporte a links de playlists públicas do YouTube
+- [ ] Denunciar um usuário através do comando `/denunciar`
+- [ ] Denunciar uma mensagem com o menu de contexto
 
 ## Comandos de Booster
-[ ] Falar com o bot em uma thread com o comando `/thread`
-[ ] Gerar imagens com o comando `/dall-e`
-[ ] Gerar texto com o comando `/completar`
+- [ ] Falar com o bot em uma thread com o comando `/thread`
+- [ ] Gerar imagens com o comando `/dall-e`
+- [ ] Gerar texto com o comando `/completar`
 
 ## Comandos do Administrador
-[ ] Configurar o Canal de Denúncias: Comando `/config-denuncias`
-[ ] Criar macros através do comando `/macro`
-[ ] Editar macros: comando `/editar-macro`
-[ ] Excluir macro: comando `/excluir-macro`
-[ ] Banir em massa: comando `/massban`
-[ ] Expulsar em massa: comando `/masskick`
-[ ] Importar histórico de mensagens: comando `/importar-historico-mensagens`
-[ ] Extrair lista de usuarios por atividade no servidor `/usuarios-inativos`
-[ ] Configurar cargo extra para falar com o bot: comando `/config-cargo-ademir`
+- [ ] Configurar o Canal de Denúncias: Comando `/config-denuncias`
+- [ ] Criar macros através do comando `/macro`
+- [ ] Editar macros: comando `/editar-macro`
+- [ ] Excluir macro: comando `/excluir-macro`
+- [ ] Banir em massa: comando `/massban`
+- [ ] Expulsar em massa: comando `/masskick`
+- [ ] Importar histórico de mensagens: comando `/importar-historico-mensagens`
+- [ ] Extrair lista de usuarios por atividade no servidor `/usuarios-inativos`
+- [ ] Configurar cargo extra para falar com o bot: comando `/config-cargo-ademir`
 
 ## Comandos de Música
-[ ] `>>play <link/track/playlist/album>`: Reproduz uma música, playlist ou álbum.
-[ ] `>>skip`: Pula para a próxima música da fila.
-[ ] `>>back`: Pula para a música anterior da fila.
-[ ] `>>replay`: Reinicia a música atual.
-[ ] `>>pause`: Pausa/Retoma a reprodução da música atual.
-[ ] `>>stop`: Interrompe completamente a reprodução de música.
-[ ] `>>loop`: Habilita/Desabilita o modo de repetição de faixa.
-[ ] `>>loopqueue`: Habilita/Desabilita o modo de repetição de playlist.
-[ ] `>>queue`: Lista as próximas 20 músicas da fila.
-[ ] `>>join`: Puxa o bot para o seu canal de voz.
-[ ] `>>quit`: Remove o bot da chamada de voz.
-[ ] `>>volume <valor>`: Ajusta o volume da música.
+- [ ] `>>play <link/track/playlist/album>`: Reproduz uma música, playlist ou álbum.
+- [ ] `>>skip`: Pula para a próxima música da fila.
+- [ ] `>>back`: Pula para a música anterior da fila.
+- [ ] `>>replay`: Reinicia a música atual.
+- [ ] `>>pause`: Pausa/Retoma a reprodução da música atual.
+- [ ] `>>stop`: Interrompe completamente a reprodução de música.
+- [ ] `>>loop`: Habilita/Desabilita o modo de repetição de faixa.
+- [ ] `>>loopqueue`: Habilita/Desabilita o modo de repetição de playlist.
+- [ ] `>>queue`: Lista as próximas 20 músicas da fila.
+- [ ] `>>join`: Puxa o bot para o seu canal de voz.
+- [ ] `>>quit`: Remove o bot da chamada de voz.
+- [ ] `>>volume <valor>`: Ajusta o volume da música.
 
 ## Instalação (DevEnv)
 
