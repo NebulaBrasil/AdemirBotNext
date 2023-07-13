@@ -1,17 +1,12 @@
 # database.py
 import pymongo
-
-# Configurações do MongoDB
-MONGO_URI = "mongodb://localhost:27017/"
-DATABASE_NAME = "nome_do_banco_de_dados"
-COLLECTION_NAME = "nome_da_colecao"
+import config
 
 # Função para conectar ao MongoDB
 def connect_to_database():
-    client = pymongo.MongoClient(MONGO_URI)
-    database = client[DATABASE_NAME]
-    collection = database[COLLECTION_NAME]
-    return collection
+    client = pymongo.MongoClient(config.MONGO_URI)
+    database = client[config.DATABASE_NAME]
+    return database
 
 # Exemplo de função para inserir um documento na coleção
 def insert_document(document):

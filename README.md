@@ -58,15 +58,17 @@ Para utilizar todos os recursos desenvolvidos nesse projeto é necessário:
 ### Passo a passo
 Para utilizar o bot "Ademir" em seu servidor do Discord, siga as etapas abaixo:
 1. Clone este repositório em sua máquina local.
-2. Instale as dependências necessárias executando o comando `pip install -r requirements.txt`.
-3. Defina as seguintes varáveis de ambiente:
+2. Crie um VEnv com o seguitne comando `python -m venv ademirvenv`
+3. Ative o venv digitando o seguinte comando `ademirvenv\Scripts\activate` no Windows ou `source ademirvenv/bin/activate` no Linux
+4. Instale as dependências necessárias executando o comando `pip install -r requirements.txt`.
+5. Defina as seguintes varáveis de ambiente (ou em um novo arquivo .env):
    - `SpotifyApiClientId`: Client ID do Aplicativo Spotify.
    - `SpotifyApiClientSecret`: Client Secret do Aplicativo Spotify
    - `PremiumGuilds`: IDs dos Servers permitidos para utilizar o ChatGPT
    - `AdemirAuth`: Token de autenticação do bot do Discord
    - `MongoServer`: String de conexão do Mongo DB
    - `ChatGPTKey`: Token de autenticação da conta de API do ChatGPT
-4. Execute o bot utilizando o comando `python main.py`.
+6. Execute o bot utilizando o comando `python main.py`.
 
 ## Instalação (Docker)
 Rode o seguintes comandos para iniciar o Ademir no docker:

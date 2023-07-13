@@ -7,7 +7,7 @@ class GPTAssistantCog(commands.Cog):
 
     @commands.command()
     async def hello(self, ctx):
-        await ctx.send('Olá, eu sou um exemplo de comando em um cog!')
+        await ctx.send('Olá, eu nao sei fazer nada ainda. Verifique no GitHub do projeto!')
 
 def setup(bot):
     bot.add_cog(GPTAssistantCog(bot))

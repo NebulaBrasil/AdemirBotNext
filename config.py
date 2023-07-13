@@ -1,11 +1,25 @@
 # config.py
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-# Token do seu bot
-TOKEN = "seu_token_aqui"
+# Configurações do MongoDB
+MONGO_URI = os.getenv('MongoServer')
+DATABASE_NAME = "ademir"
+PREMIUM_GUILDS = os.getenv('PremiumGuilds')
+OPENAPI_TOKEN = os.getenv('ChatGPTKey')
+SPOTIFY_CLIENT_ID = os.getenv('SpotifyApiClientId')
+SPOTIFY_CLIENT_SECRET = os.getenv('SpotifyApiClientSecret')
+
+# Token do bot
+TOKEN = os.getenv('AdemirAuth')
+
+# Token do bot
+TOKEN = os.getenv('AdemirAuth')
 
 # Prefixo dos comandos (opcional)
-PREFIX = "!"
+PREFIX = ">>"
 
-# Outras configurações do seu bot
-NOME_BOT = "Nome do seu Bot"
-DESCRICAO_BOT = "Descrição do seu Bot"
+# Outras configurações do bot
+NOME_BOT = "Ademir"
+DESCRICAO_BOT = "Bot"
