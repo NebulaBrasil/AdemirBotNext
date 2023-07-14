@@ -1,12 +1,20 @@
+from bson.json_util import dumps
 import interactions
 import openai
 import config
+import database
 
 openai.api_key = config.OPENAPI_TOKEN
 
 class GptAssistant(interactions.Extension):
     def __init__(self, client: interactions.Client) -> None:
         self.client: interactions.Client = client
+
+    @interactions.listen()
+    async def on_startup(self):
+        for guild in self.client.guilds:
+            ademir_config = database.obter_config_ademir(guild.id)
+            print("Configurações da Guilda:", dumps(ademir_config))
     
     @interactions.listen()
     async def on_message_create(self, message_create: interactions.events.MessageCreate):

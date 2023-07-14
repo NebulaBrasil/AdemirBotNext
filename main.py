@@ -6,7 +6,7 @@ from interactions import Client, Intents, listen
 
 logging.basicConfig()
 cls_log = logging.getLogger("Ademir")
-cls_log.setLevel(logging.DEBUG)
+cls_log.setLevel(logging.ERROR)
 
 client = Client(intents=Intents.ALL, sync_interactions=True, logger=cls_log)
 
