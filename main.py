@@ -1,23 +1,21 @@
 # main.py
+import asyncio
 import os
-import discord
-from discord.ext import commands
+import interactions
 import config
 
-intents = discord.Intents.all()
-intents.members = True
+client = interactions.Client()
 
-bot = commands.Bot(command_prefix=config.PREFIX, intents=intents)
-
+@interactions.listen()
+async def on_startup():
+    print("Bot ready")
+    
 async def load_cogs():
-    for filename in os.listdir('./cogs'):
+    for filename in os.listdir('./extensions'):
         if filename.endswith('.py'):
-            await bot.load_extension(f'cogs.{filename[:-3]}')
-
-@bot.event
-async def on_ready():
-    print(f'Bot conectado como {bot.user.name}')
-    await load_cogs()
-
+            client.load_extension(f'extensions.{filename[:-3]}')
+  
 if __name__ == '__main__':
-    bot.run(config.TOKEN)
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(load_cogs())   
+    client.start(config.TOKEN)
