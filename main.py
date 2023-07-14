@@ -1,5 +1,4 @@
 import logging
-import asyncio
 import os
 import config
 from interactions import Client, Intents, listen
