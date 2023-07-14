@@ -1,6 +1,6 @@
 # AdemirBot
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)[![Python package](https://github.com/welldtr/AdemirBotNext/actions/workflows/python-package.yml/badge.svg)](https://github.com/welldtr/AdemirBotNext/actions/workflows/python-package.yml)
 
 ## Descrição
 O projeto "Ademir" é um bot criado para melhorar a experiência de comunidades focadas em bem-estar. Ele permite reproduzir músicas, criar macros, efetuar ações de moderação em massa e conversar com a API do ChatGPT.
