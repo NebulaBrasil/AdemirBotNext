@@ -2,7 +2,6 @@ from bson.json_util import dumps
 import interactions
 import openai
 import config
-import database
 
 openai.api_key = config.OPENAPI_TOKEN
 
