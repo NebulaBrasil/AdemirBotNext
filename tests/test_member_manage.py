@@ -35,7 +35,10 @@ def modal_context(client):
 @pytest.fixture
 def fectch_member(member_objects, member_ids):
     async def fetch_memb(id):
-        return member_objects[member_ids.index(id)]
+        if id not in member_ids:
+            return None
+        else:
+            return member_objects[member_ids.index(id)]
     return fetch_memb
 
 @pytest.mark.asyncio
@@ -44,12 +47,16 @@ async def test_ban_members(mocker, member_manage, guild, fectch_member, member_i
     guild.fetch_member = fectch_member
     await member_manage.ban_members(guild, member_ids)
     assert ban_mock.call_count == len(member_ids)
+    await member_manage.kick_members(guild, [1])
+    assert ban_mock.call_count == len(member_ids)
 
 @pytest.mark.asyncio
 async def test_kick_members(mocker, member_manage, guild, fectch_member, member_ids):
-    guild.fetch_member = fectch_member    
+    guild.fetch_member = fectch_member
     kick_mock = mocker.patch("interactions.Guild.kick")
     await member_manage.kick_members(guild, member_ids)
+    assert kick_mock.call_count == len(member_ids)
+    await member_manage.kick_members(guild, [1])
     assert kick_mock.call_count == len(member_ids)
 
 def test_split_and_parse_member_ids(member_manage):
