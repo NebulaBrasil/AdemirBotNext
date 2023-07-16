@@ -48,7 +48,7 @@ class MemberManage(Extension):
         description="Expulsar membros em massa.",
         default_member_permissions=interactions.Permissions.ADMINISTRATOR
     )
-    async def masskick(self, ctx: interactions.SlashContext):
+    async def mass_kick(self, ctx: interactions.SlashContext):
         modal = Modal(
             ParagraphText(label="ID dos Membros", custom_id="members"),
             title="Expulsar Membros em Massa",

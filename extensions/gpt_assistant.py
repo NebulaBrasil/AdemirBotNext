@@ -15,7 +15,7 @@ class GptAssistant(interactions.Extension):
         if message.client.user.mention in message.content:                
             response = openai.ChatCompletion.create(
                 model=config.CHAT_GPT_MODEL,
-                messages=[{ "role": "user", "content": str.replace(message.content, message.client.user.mention, config.NOME_BOT) }]
+                messages=[{ "role": "user", "content": str.replace(message.content, message.client.user.mention, config.BOT_NAME) }]
                 )
             await message.channel.send(response["choices"][0]["message"]["content"])
 
