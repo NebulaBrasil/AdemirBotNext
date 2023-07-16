@@ -47,7 +47,7 @@ O projeto "Ademir" é um bot criado para melhorar a experiência de comunidades 
 - [ ] `>>volume <valor>`: Ajusta o volume da música.
 
 ## Outros (Incrementos)
-- [x] `>>dbstatus`: Retorna o status do banco de dados [Online | Offline].
+- [x] `/dbstatus`: Retorna o status do banco de dados [Online | Offline].
 
 
 ## Instalação (DevEnv)
