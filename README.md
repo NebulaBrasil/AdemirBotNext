@@ -46,6 +46,10 @@ O projeto "Ademir" é um bot criado para melhorar a experiência de comunidades 
 - [ ] `>>quit`: Remove o bot da chamada de voz.
 - [ ] `>>volume <valor>`: Ajusta o volume da música.
 
+## Outros (Incrementos)
+- [x] `/dbstatus`: Retorna o status do banco de dados [Online | Offline].
+
+
 ## Instalação (DevEnv)
 
 ### Dependências externas
