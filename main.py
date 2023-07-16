@@ -5,14 +5,14 @@ import interactions
 from interactions import Client, Intents
 
 logging.basicConfig()
-cls_log = logging.getLogger("Ademir")
+cls_log = logging.getLogger(config.BOT_NAME)
 cls_log.setLevel(logging.ERROR)
 
 client = Client(intents=Intents.ALL, sync_interactions=True, logger=cls_log)
 
 @interactions.listen()
 async def on_startup():
-    print("Bot ready")
+    print(f"{config.BOT_NAME} iniciado.")
     
 def load_extensions():
     for filename in os.listdir('./extensions'):
