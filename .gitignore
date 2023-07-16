@@ -2,3 +2,4 @@
 .env
 ademirvenv/
 pip-freeze.txt
+certs/
