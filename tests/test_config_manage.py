@@ -86,4 +86,4 @@ async def test_configure_conversation_role(mocker, config_manage, cargo, slash_c
     await config_manage.configure_conversation_role(slash_context, cargo)
     assert mock_slash_ctx_defer.call_count == 1    
     assert mock_repo_replace.call_count == 1    
-    mock_slash_ctx_send.assert_called_once_with(f"Cargo <@&{cargo.id}> permitido para o Ademir configurado.", ephemeral=True)
+    mock_slash_ctx_send.assert_called_once_with(f"Cargo {cargo.mention} permitido para o Ademir configurado.", ephemeral=True)
