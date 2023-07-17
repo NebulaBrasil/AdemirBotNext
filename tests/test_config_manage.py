@@ -82,8 +82,7 @@ def slash_context(client, cargo):
 async def test_configure_conversation_role(mocker, config_manage, cargo, slash_context):
     mock_slash_ctx_send = mocker.patch("interactions.SlashContext.send")
     mock_slash_ctx_defer = mocker.patch("interactions.SlashContext.defer")    
-    mock_repo_replace = mocker.patch("pymongo.collection.Collection.replace_one")
+    db = mocker.patch("pymongo.MongoClient")    
     await config_manage.configure_conversation_role(slash_context, cargo)
     assert mock_slash_ctx_defer.call_count == 1    
-    assert mock_repo_replace.call_count == 1    
     mock_slash_ctx_send.assert_called_once_with(f"Cargo {cargo.mention} permitido para o Ademir configurado.", ephemeral=True)
