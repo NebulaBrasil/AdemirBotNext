@@ -1,5 +1,7 @@
 **/__pycache__
 .env
 ademirvenv/
+certs/
+.pytest_cache
 pip-freeze.txt
 certs/
