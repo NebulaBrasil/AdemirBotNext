@@ -29,17 +29,14 @@ def test_get_database_status_offline(client):
 
         assert status == 'Offline'
 
+@pytest.fixture
+def db_status(client):
+    return DataBaseStatus(client)
+
 @pytest.mark.asyncio
-async def test_dbstatus_command(client):
-    db_status = DataBaseStatus(client)
-
-    mock_get_database_status = AsyncMock(return_value='Online')
-    db_status.get_database_status = mock_get_database_status
-
+async def test_dbstatus_command(mocker, db_status):
+    mock_get_database_status = mocker.patch("extensions.back_utils.DataBaseStatus.get_database_status", return_value='Online')
     ctx = AsyncMock()
-
     await asyncio.gather(db_status.dbstatus(ctx))
-
-    mock_get_database_status()
     mock_get_database_status.assert_called_once()
     ctx.send.assert_called_with('Database: **Online**')
