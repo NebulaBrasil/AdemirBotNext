@@ -1,5 +1,5 @@
 import interactions
-from interactions import Client, Extension, Guild, Modal, ModalContext, ParagraphText, ShortText
+from interactions import Client, Extension, Guild, Modal, ModalContext, ParagraphText
 import openai
 import config
 
