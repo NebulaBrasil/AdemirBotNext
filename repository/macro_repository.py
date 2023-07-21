@@ -1,5 +1,6 @@
 from http.client import NOT_FOUND
 import re
+import uuid
 import bson
 from pymongo.collection import Collection
 from database import get_database
@@ -21,7 +22,7 @@ class MacroRepository(BaseRepository):
         return None
 
     def create_macro(self, macro_data: Macro):
-        return self.collection.insert_one(macro_data.to_dict())
+        return self.collection.insert_one(vars(Macro(macro_id = uuid.uuid4(), guild_id = macro_data.guild_id, title = macro_data.title, text = macro_data.text)))
 
     def update_macro(self, macro_id, macro_data: Macro):
         return self.collection.update_one({"_id": macro_id}, {"$set": macro_data.to_dict()})
