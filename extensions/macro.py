@@ -18,13 +18,13 @@ class Macros(Extension):
 
     def macro_insert(self, guild_id: int, macro_title: str, macro_text: str):
         macro_repository = MacroRepository()
-        new_macro = Macro(macro_id = uuid.uuid4(), guild_id=guild_id, title=macro_title, text=macro_text)
         macro = macro_repository.get_macro_by_title(macro_title)
-        if macro is not None:
-            return False
-        else:
+        if macro is None:
+            new_macro = Macro(guild_id=guild_id, title=macro_title, text=macro_text)
             macro_repository.create_macro(new_macro)
             return True
+        else:
+            return False
 
     @interactions.slash_command(
         name="macro-add", 
