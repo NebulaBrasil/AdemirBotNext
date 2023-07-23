@@ -12,11 +12,11 @@ class MacroRepository(BaseRepository):
     def get_macro_by_id(self, macro_id):
         return self.collection.find_one({"_id": macro_id})
     
-    def get_macro_by_title(self, title: str):
+    def get_macro_by_title_and_guild_id(self, title: str, guild_id):
         ignore_case = re.compile(f'^{re.escape(title)}$', re.IGNORECASE)
-        macro_data = self.collection.find_one({"title": {"$regex": ignore_case}})
-        if macro_data:
-            return Macro(macro_data["guild_id"], macro_data["title"], macro_data["text"])
+        cursor = self.collection.find_one({"title": {"$regex": ignore_case}, "guild_id": str(guild_id)})
+        if cursor:
+            return Macro(guild_id=cursor["guild_id"], title=cursor["title"], text=cursor["text"], macro_id=cursor["_id"])
         return None
 
     def create_macro(self, macro_data: Macro):
@@ -27,3 +27,8 @@ class MacroRepository(BaseRepository):
 
     def delete_macro(self, macro_id):
         return self.collection.delete_one({"_id": macro_id})
+    
+    def find_all(self, guild_id: int):
+        cursor = self.collection.find({"guild_id": str(guild_id)})
+        all_macros = list(Macro(**macro) for macro in cursor)
+        return all_macros
