@@ -90,8 +90,6 @@ class Macros(Extension):
             )
             await ctx.send_modal(modal)
             modal_ctx: ModalContext = await ctx.bot.wait_for_modal(modal)
-
-            macro_title = modal_ctx.responses["macro-title"].capitalize
             macro_new_text = modal_ctx.responses["macro-text"]
             old_macro_text = find_macro.text
             find_macro.text = macro_new_text
@@ -100,7 +98,7 @@ class Macros(Extension):
             macro_formated_old_text = self.trim_text(old_macro_text)
             macro_formated_new_text = self.trim_text(find_macro.text)
 
-            mensagem = f"```ansi\n\u001b[2;37mMACRO {macro_title} EDITADA!\n\u001b[0m\u001b[2;31m\u001b[1;31m• ANTES:\n\u001b[0m\u001b[2;31m\u001b[0m{macro_formated_old_text}\n\u001b[2;34m\u001b[1;34m\u001b[0m\u001b[2;34m\u001b[1;34m• DEPOIS:\n\u001b[0m\u001b[2;34m\u001b[0m{macro_formated_new_text}```"
+            mensagem = f"```ansi\n\u001b[2;37mMACRO {macro} EDITADA!\n\u001b[0m\u001b[2;31m\u001b[1;31m• ANTES:\n\u001b[0m\u001b[2;31m\u001b[0m{macro_formated_old_text}\n\u001b[2;34m\u001b[1;34m\u001b[0m\u001b[2;34m\u001b[1;34m• DEPOIS:\n\u001b[0m\u001b[2;34m\u001b[0m{macro_formated_new_text}```"
             await modal_ctx.send(mensagem)
     
     @interactions.slash_command(
