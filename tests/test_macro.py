@@ -1,7 +1,8 @@
-import json
-from unittest.mock import MagicMock
-import interactions
+from unittest.mock import AsyncMock, MagicMock
+import uuid
+from bson import Binary, UuidRepresentation
 import pytest
+from entities.macro_entity import Macro
 from extensions.macro import Macros
 from interactions import Client, Extension, Guild, InteractionType, Modal, OptionType, SlashCommandOption
 from interactions import SlashContext, ModalContext
@@ -9,11 +10,6 @@ from interactions import SlashContext, ModalContext
 @pytest.fixture
 def client():
     return Client()
-
-@pytest.fixture
-def macro():
-    return "Macro Test"
-
 
 @pytest.fixture
 def macros(client):
@@ -56,105 +52,158 @@ def guild(client, fetch_member):
     return guild
 
 @pytest.fixture
-def slash_context(client):
-    slash_context = SlashContext.from_dict(client, {
-        "id":1234,
-        "type":InteractionType.APPLICATION_COMMAND,
-        "channel_id": 123412, 
-        "guild_id": 123123, 
-        "locale":"pt-BR", 
-        "token":"dummy",
-        "data": {"id":99898, "name":"name"},
-        "user":{"id":123123, "username":"fulano", "avatar": "", "discriminator":123123}
-        })
-    return slash_context
-
-@pytest.fixture
-def slash_context_withOptions(client):
-    options = [
-        interactions.SlashCommandOption(
-            name="macro",
-            description="macro para editar",
-            type=interactions.OptionType.STRING,
-            required=True,
-        )
-    ]
-        
-    slash_context = SlashContext.from_dict(client, {
-        "id":1234,
-        "type":InteractionType.APPLICATION_COMMAND,
-        "channel_id": 123412, 
-        "guild_id": 123123, 
-        "locale":"pt-BR", 
-        "token":"dummy",
-        "data": {"id":99898, "name":"name"},
-        "user":{"id":123123, "username":"fulano", "avatar": "", "discriminator":123123},
-        "options": options
-        })
-    return slash_context
-
-
-@pytest.fixture
-def send_modal():
-    async def send_modal(modal):
-        return None
-    return send_modal
-
-@pytest.fixture
-def wait_for_modal(client):
-    async def wait_for_modal(modal):
-        ctx = ModalContext(client)
-        ctx.responses = dict.fromkeys(["macro-title", "macro-text"], "Valor Padrão")
-        return ctx
-    return wait_for_modal
-
-@pytest.fixture
 def modal_context(client):
     modal_context = ModalContext(client)
     modal_context.responses = {"macro-title": "Valor Padrão", "macro-text": "Valor Padrão"}
     return modal_context
 
 @pytest.mark.asyncio
-async def test_macro_add(mocker, macros, client, slash_context, wait_for_modal, send_modal):
+async def test_macro_add_success(mocker, macros, modal_context):
     macro_text = "Valor Padrão"
     macro_title = "Valor Padrão"
     guild_id = 123123
-    mock_macro_add = mocker.patch("extensions.macro.Macros.macro_insert")
-    mock_modal_ctx_send = mocker.patch("interactions.ModalContext.send")
-    client.wait_for_modal = wait_for_modal
-    slash_context.send_modal = send_modal
+    
+    slash_context = mocker.MagicMock()
+    slash_context.guild_id = guild_id
+    slash_context.send_modal = mocker.AsyncMock()
+    slash_context.bot = mocker.MagicMock()
+    slash_context.bot.wait_for_modal = mocker.AsyncMock()
+    slash_context.bot.wait_for_modal.return_value = modal_context
+
+    modal_context.responses = {
+        "macro-title": macro_title,
+        "macro-text": macro_text
+    }
+    modal_context.send = mocker.AsyncMock()
+    modal_context.defer = mocker.AsyncMock()
+    modal_context.id = "mock_id" 
+    modal_context.token = "mock_token"
+    mocker.patch.object(macros, 'macro_insert', return_value=True)
+
     await macros.macro_add(slash_context)
-    mock_macro_add.assert_called_once_with(guild_id, macro_title, macro_text)
-    mock_modal_ctx_send.assert_called_once_with(f"Macro **{macro_title}** adicionada.")
 
+    macros.macro_insert.assert_called_once_with(guild_id, macro_title, macro_text)
 
-
-@pytest.fixture
-def macro_repository_mock():
-    # Create a MagicMock instance to mock the MacroRepository class
-    macro_repository_mock = MagicMock()
-    macro_repository_mock.update_macro = MagicMock()
-    macro_repository_mock.delete_macro = MagicMock()
-
-    return macro_repository_mock
-
+    modal_context.send.assert_called_once_with(f"Macro **{macro_title}** adicionada.")
 
 @pytest.mark.asyncio
-async def test_macro_edit(mocker, macros, client, slash_context_withOptions, wait_for_modal, send_modal, macro_repository_mock, macro):
-    mock_modal_ctx_send = mocker.patch("interactions.ModalContext.send")
-    client.wait_for_modal = wait_for_modal
-    macros.macro_repository = macro_repository_mock
-    slash_context_withOptions.send_modal = send_modal
-    await macros.macro_edit(slash_context_withOptions, macro)
-    mock_modal_ctx_send.assert_called_once_with(f"Macro **{macro}** editada!")
-
-
-@pytest.mark.asyncio
-async def test_macro_delete(mocker, macros, client, slash_context, macro_repository_mock, slash_context_withOptions, macro):
+async def test_macro_add_failure(mocker, macros, modal_context):
     macro_text = "Valor Padrão"
     macro_title = "Valor Padrão"
     guild_id = 123123
-    mock_modal_ctx_send = mocker.patch("interactions.ModalContext.send")
-    await macros.macro_delete(slash_context_withOptions, macro)
-    macros.macro_repository = macro_repository_mock
-    mock_modal_ctx_send.assert_called_once_with(f"Macro **{macro_title}** adicionada.")
+
+    slash_context = mocker.MagicMock()
+    slash_context.guild_id = guild_id
+    slash_context.send_modal = mocker.AsyncMock()
+    slash_context.bot = mocker.MagicMock()
+    slash_context.bot.wait_for_modal = mocker.AsyncMock()
+    slash_context.bot.wait_for_modal.return_value = modal_context
+
+    modal_context.responses = {
+        "macro-title": macro_title,
+        "macro-text": macro_text
+    }
+    modal_context.send = mocker.AsyncMock()
+    modal_context.defer = mocker.AsyncMock()
+    modal_context.id = "mock_id"
+    modal_context.token = "mock_token"
+    mocker.patch.object(macros, 'macro_insert', return_value=False)
+
+    await macros.macro_add(slash_context)
+    modal_context.send.assert_called_once_with(f"Macro **{macro_title}** já existe!")
+
+@pytest.mark.asyncio
+async def test_macro_edit_success(mocker, macros):
+    macro_title = "Valor Padrão"
+    macro_text = "Valor Editado"
+    guild_id = 123123
+
+    slash_option_mock = mocker.MagicMock()
+    slash_option_mock.value = macro_title  # Mock do SlashOption
+
+    slash_context = mocker.MagicMock()
+    slash_context.guild_id = guild_id
+    slash_context.send_modal = mocker.AsyncMock()
+    slash_context.bot = mocker.MagicMock()
+    slash_context.bot.wait_for_modal = mocker.AsyncMock()
+    slash_context.bot.wait_for_modal.return_value = modal_context
+    slash_context.args = [macro_title]
+    slash_context.kwargs = {"macro": macro_title}
+
+    modal_context.responses = {
+        "macro-text": macro_text
+    }
+    modal_context.send = mocker.AsyncMock()
+    modal_context.defer = mocker.AsyncMock()
+    modal_context.id = "mock_id"
+    modal_context.token = "mock_token"
+
+    macro_value = Macro(macro_id=uuid.uuid4(), guild_id=guild_id, title=macro_title, text="Valor Padrão")
+    mocker.patch.object(macros, 'get_macro_by_title_and_guild_id', return_value=macro_value)
+    mocker.patch.object(macros, 'macro_insert', return_value=True)
+    mocker.patch.object(macros, 'update_guild_macros', return_value=True)
+
+    await macros.macro_edit(slash_context)
+
+@pytest.mark.asyncio
+async def test_macro_edit_failure(mocker, macros):
+    macro_title = "Macro Não Existente"
+    guild_id = 123123
+
+    slash_context = mocker.MagicMock()
+    slash_context.guild_id = guild_id
+    slash_context.send = mocker.AsyncMock()
+    slash_context.bot = mocker.MagicMock()
+    slash_context.args = [macro_title]
+    slash_context.kwargs = {"macro": macro_title}
+
+    mocker.patch.object(macros, 'get_macro_by_title_and_guild_id', return_value=None)
+    await macros.macro_edit(slash_context)
+    slash_context.send.assert_awaited_with(f"A macro **{macro_title}** não existe neste servidor!")
+
+@pytest.mark.asyncio
+async def test_macro_delete_success(mocker, macros):
+    macro_title = "Macro para Deletar"
+    guild_id = 123123
+
+    slash_context = mocker.MagicMock()
+    slash_context.guild_id = guild_id
+    slash_context.send = mocker.AsyncMock()
+    slash_context.defer = mocker.AsyncMock() 
+    slash_context.bot = mocker.MagicMock()
+    slash_context.args = [macro_title]
+    slash_context.kwargs = {"macro": macro_title}
+    my_uuid = uuid.uuid4()
+    bson_uuid = Binary.from_uuid(my_uuid, uuid_representation=UuidRepresentation.STANDARD)
+
+    macro = Macro(macro_id=bson_uuid, guild_id=guild_id, title=macro_title, text="Valor Padrão")
+    mocker.patch.object(Macros, 'get_macro_by_title_and_guild_id', return_value=macro)
+    macro_repository_mock = mocker.MagicMock()
+    mocker.patch('repository.macro_repository.MacroRepository', return_value=macro_repository_mock)
+    mocker.patch.object(macros, 'update_guild_macros')
+    await macros.macro_delete(slash_context)
+    slash_context.send.assert_awaited_with(f"A macro **{macro_title}** foi deletada!")
+
+@pytest.mark.asyncio
+async def test_macro_delete_not_found(mocker, macros):
+    macro_title = "Macro inexistente"
+    guild_id = 123123
+
+    slash_context = mocker.MagicMock()
+    slash_context.guild_id = guild_id
+    slash_context.send = mocker.AsyncMock()
+    slash_context.defer = mocker.AsyncMock()
+    slash_context.bot = mocker.MagicMock()
+    slash_context.args = [macro_title]
+    slash_context.kwargs = {"macro": macro_title}
+
+    # Simula que não há uma macro correspondente para deletar
+    mocker.patch.object(Macros, 'get_macro_by_title_and_guild_id', return_value=None)
+
+    macro_repository_mock = mocker.MagicMock()
+    mocker.patch('repository.macro_repository.MacroRepository', return_value=macro_repository_mock)
+    mocker.patch.object(macros, 'update_guild_macros')
+
+    await macros.macro_delete(slash_context)
+
+    slash_context.send.assert_awaited_with(f"A macro **{macro_title}** não existe neste servidor!")

@@ -30,5 +30,5 @@ class MacroRepository(BaseRepository):
     
     def find_all(self, guild_id: int):
         cursor = self.collection.find({"guild_id": str(guild_id)})
-        all_macros = list(Macro(**macro) for macro in cursor)
+        all_macros = list(Macro(guild_id=macro["guild_id"], title=macro["title"], text=macro["text"], macro_id=macro["_id"]) for macro in cursor)
         return all_macros
