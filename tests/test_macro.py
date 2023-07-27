@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, MagicMock
 import uuid
 from bson import Binary, UuidRepresentation
 import pytest
+from repository.macro_repository import MacroRepository
 from entities.macro_entity import Macro
 from extensions.macro import Macros
 from interactions import Client, Extension, Guild, InteractionType, Modal, OptionType, SlashCommandOption

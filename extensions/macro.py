@@ -4,11 +4,11 @@ import datetime
 import config
 import openai
 import uuid
-from interactions import Client, Embed, Extension, Guild, Modal, ModalContext, ParagraphText, ShortText, StringSelectMenu, StringSelectOption
+from interactions import ActionRow, Button, ButtonStyle, Client, ComponentContext, Embed, Extension, Guild, Modal, ModalContext, ParagraphText, Permissions, ShortText, StringSelectMenu, StringSelectOption, component_callback, listen
 from discord_typings import SelectMenuComponentData, SelectMenuOptionData
 from repository.macro_repository import MacroRepository
 from entities.macro_entity import Macro
-
+from interactions.ext.paginators import Paginator
 import logging
 
 logger = logging.getLogger(__name__)
@@ -186,15 +186,16 @@ class Macros(Extension):
         macros = self.guild_macros.get(guild_id, [])
 
         if not macros:
-            await ctx.send("Ainda não possui macros nesse servidor!")
+            await ctx.send("Ainda não há macros nesse servidor!")
         else:
+            embeds = []
             embed = Embed(
                 title="Macros do Servidor",
                 description="Todas as macros deste servidor:",
                 color=0x71368a, 
                 timestamp=datetime.datetime.now(timezone('UTC'))
             )
-
+            count = 0
             for macro in macros:
                 if macro.text.startswith("http") and macro.text.rsplit('.', 1)[-1] in {'png', 'jpg', 'jpeg', 'gif'}:
                     value = f"[Imagem]({macro.text})"
@@ -204,7 +205,65 @@ class Macros(Extension):
                     else:
                         value = macro.text
                 embed.add_field(name=macro.title, value=value, inline=False)
-            
-            await ctx.send(embed=embed)
+                count += 1
+                if count == 5:
+                    embeds.append(embed)
+                    count = 0
+                    embed = Embed(
+                        title="Macros do Servidor",
+                        description="Todas as macros deste servidor:",
+                        color=0x71368a, 
+                        timestamp=datetime.datetime.now(timezone('UTC'))
+                    )
+            if count > 0:
+                embeds.append(embed)
+            paginator = Paginator.create_from_embeds(ctx.bot, *embeds)
+            paginator.default_button_color = ButtonStyle.BLUE
+            await paginator.send(ctx)
+
+    @interactions.slash_command(
+        name="macro-delete-all", 
+        description="Deleta todas as macros do servidor.",
+        default_member_permissions=Permissions.ADMINISTRATOR
+    )
+    async def macro_delete_all(self, ctx: interactions.SlashContext):
+        guild_id = ctx.guild_id
+        if guild_id not in self.guild_macros:
+            await self.update_guild_macros(guild_id)
+        macros = self.guild_macros.get(guild_id, [])
+
+        if not macros:
+            await ctx.send("Ainda não há macros nesse servidor!")
+        else:
+            components = [
+                ActionRow(
+                    Button(
+                        custom_id="confirm_delete_all_macro_button",
+                        style=ButtonStyle.GREEN,
+                        label="Confirm",
+                    ),
+                    Button(
+                        custom_id="cancel_delete_all_macro_button",
+                        style=ButtonStyle.RED,
+                        label="Cancel",
+                    ),
+                ),
+            ]
+            await ctx.send("Você tem certeza que quer deletar todas as macros?", components=components, ephemeral=True)
+
+    @component_callback("confirm_delete_all_macro_button")
+    @interactions.auto_defer()
+    async def confirm_callback(self, ctx: ComponentContext):
+        guild_id = ctx.guild_id
+        macro_repository = MacroRepository()
+        macro_repository.delete_all_macros(guild_id)
+        await self.update_guild_macros(guild_id)
+        await ctx.send(f"O usuario {ctx.author.mention} deletou todas as macros.")
+
+    @component_callback("cancel_delete_all_macro_button")
+    @interactions.auto_defer()
+    async def cancel_callback(self, ctx: ComponentContext):
+        await ctx.send("Operação cancelada.", ephemeral=True)
+
 
         
