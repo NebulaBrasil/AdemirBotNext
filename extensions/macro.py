@@ -1,3 +1,4 @@
+from functools import lru_cache
 from pytz import timezone
 import interactions
 import datetime
@@ -28,66 +29,30 @@ class Macros(Extension):
         self.macro_repository = MacroRepository()
         self.guild_macros = {}
 
-    @interactions.listen('GUILD_CREATE') # <- na inicialização do bote na criação de uma nova guild
+    """Class for operations around macros.
+
+    NOTE: The LRU Cache in the get_all_macros function prevents the bot from 
+    constantly querying the database to retrieve all macros. It stores up to a 
+    maximum of 50 macros in cache. This is not intended to reduce the bot's 
+    memory footprint (as the memory usage in this case is quite low), but to 
+    minimize database requests.
+
+    """
+
+    @interactions.listen('GUILD_CREATE')
     async def on_guild_create(self, guild: Guild):
         await self.update_guild_macros(guild.id)
 
     async def update_guild_macros(self, guild_id: int):
         self.guild_macros[guild_id] = self.get_all_macros(guild_id)
 
+    @lru_cache(maxsize=50)  # Adjust the maxsize based on your own requeriments
     def get_all_macros(self, guild_id: int):
         try:
             return list(self.macro_repository.find_all(guild_id))
         except Exception as e:
             logger.error(f"Failed to get all macros for guild {guild_id}: {e}")
             return []
-        
-    def create_macro(self, guild_id: int, macro_title: str, macro_text: str):
-        macro = self.get_macro_by_title_and_guild_id(macro_title, guild_id)
-        if macro is None:
-            new_macro = Macro(macro_id=uuid.uuid4(), guild_id=guild_id, title=macro_title, text=macro_text)
-            try:
-                self.macro_repository.create_macro(new_macro)
-                logger.info(f"Created new macro {macro_title} for guild {guild_id}")
-                return True
-            except Exception as e:
-                logger.error(f"Failed to create macro {macro_title} for guild {guild_id}: {e}")
-                raise
-        else:
-            logger.warning(f"Macro {macro_title} for guild {guild_id} already exists")
-            return False
-
-    def update_macro(self, macro: Macro):
-        try:
-            self.macro_repository.update_macro(macro.macro_id, macro)
-            return macro
-        except Exception as e:
-            logger.error(f"Failed to update macro {macro.title} for guild {macro.guild_id}: {e}")
-            return None
-
-    def delete_macro(self, macro: Macro):
-        try:
-            self.macro_repository.delete_macro(macro.macro_id)
-            return True
-        except Exception as e:
-            logger.error(f"Failed to delete macro {macro.title} for guild {macro.guild_id}: {e}")
-            return False
-
-    @interactions.listen('GUILD_CREATE')
-    async def on_guild_create(self, guild: Guild):
-        await self.update_guild_macros(guild.id)
-
-    def get_macro_by_title_and_guild_id(self, macro_title: str, guild_id: int):
-        try:
-            return self.macro_repository.get_macro_by_title_and_guild_id(macro_title, guild_id)
-        except Exception as e:
-            logger.error(f"Failed to get macro {macro_title} for guild {guild_id}: {e}")
-            raise
-
-    def trim_text(self, text):
-        if len(text) > 900:
-            return text[:850] + "..."
-        return text
         
     @interactions.slash_command(
         name="macro-add", 
@@ -292,5 +257,48 @@ class Macros(Extension):
     async def cancel_callback(self, ctx: ComponentContext):
         await ctx.send("Operação cancelada.", ephemeral=True)
 
+    """Repository and format utilies"""
 
+    def create_macro(self, guild_id: int, macro_title: str, macro_text: str):
+        macro = self.get_macro_by_title_and_guild_id(macro_title, guild_id)
+        if macro is None:
+            new_macro = Macro(macro_id=uuid.uuid4(), guild_id=guild_id, title=macro_title, text=macro_text)
+            try:
+                self.macro_repository.create_macro(new_macro)
+                logger.info(f"Created new macro {macro_title} for guild {guild_id}")
+                return True
+            except Exception as e:
+                logger.error(f"Failed to create macro {macro_title} for guild {guild_id}: {e}")
+                raise
+        else:
+            logger.warning(f"Macro {macro_title} for guild {guild_id} already exists")
+            return False
+
+    def update_macro(self, macro: Macro):
+        try:
+            self.macro_repository.update_macro(macro.macro_id, macro)
+            return macro
+        except Exception as e:
+            logger.error(f"Failed to update macro {macro.title} for guild {macro.guild_id}: {e}")
+            return None
+
+    def delete_macro(self, macro: Macro):
+        try:
+            self.macro_repository.delete_macro(macro.macro_id)
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delete macro {macro.title} for guild {macro.guild_id}: {e}")
+            return False
+
+    def get_macro_by_title_and_guild_id(self, macro_title: str, guild_id: int):
+        try:
+            return self.macro_repository.get_macro_by_title_and_guild_id(macro_title, guild_id)
+        except Exception as e:
+            logger.error(f"Failed to get macro {macro_title} for guild {guild_id}: {e}")
+            raise
+
+    def trim_text(self, text):
+        if len(text) > 900:
+            return text[:850] + "..."
+        return text
         
