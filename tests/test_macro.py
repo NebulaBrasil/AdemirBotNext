@@ -79,11 +79,11 @@ async def test_macro_add_success(mocker, macros, modal_context):
     modal_context.defer = mocker.AsyncMock()
     modal_context.id = "mock_id" 
     modal_context.token = "mock_token"
-    mocker.patch.object(macros, 'macro_insert', return_value=True)
+    mocker.patch.object(macros, 'create_macro', return_value=True)
 
     await macros.macro_add(slash_context)
 
-    macros.macro_insert.assert_called_once_with(guild_id, macro_title, macro_text)
+    macros.create_macro.assert_called_once_with(guild_id, macro_title, macro_text)
 
     modal_context.send.assert_called_once_with(f"Macro **{macro_title}** adicionada.")
 
@@ -108,7 +108,7 @@ async def test_macro_add_failure(mocker, macros, modal_context):
     modal_context.defer = mocker.AsyncMock()
     modal_context.id = "mock_id"
     modal_context.token = "mock_token"
-    mocker.patch.object(macros, 'macro_insert', return_value=False)
+    mocker.patch.object(macros, 'create_macro', return_value=False)
 
     await macros.macro_add(slash_context)
     modal_context.send.assert_called_once_with(f"Macro **{macro_title}** já existe!")
@@ -141,7 +141,7 @@ async def test_macro_edit_success(mocker, macros):
 
     macro_value = Macro(macro_id=uuid.uuid4(), guild_id=guild_id, title=macro_title, text="Valor Padrão")
     mocker.patch.object(macros, 'get_macro_by_title_and_guild_id', return_value=macro_value)
-    mocker.patch.object(macros, 'macro_insert', return_value=True)
+    mocker.patch.object(macros, 'create_macro', return_value=True)
     mocker.patch.object(macros, 'update_guild_macros', return_value=True)
 
     await macros.macro_edit(slash_context)

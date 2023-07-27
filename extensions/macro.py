@@ -13,20 +13,65 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-openai.api_key = config.OPENAPI_TOKEN
+EMBED_COLOR = 0x71368a
+MAX_MACRO_LENGTH = 900
+MAX_EMBED_FIELD_LENGTH = 1024
+EMBED_FIELD_COUNT = 5
+OPENAPI_TOKEN = config.OPENAPI_TOKEN
+
+openai.api_key = OPENAPI_TOKEN
+
 
 class Macros(Extension):
     def __init__(self, client: Client) -> None:
         self.client: Client = client
         self.macro_repository = MacroRepository()
-        self.guild_macros = {}  # Dict to store macros for guild
+        self.guild_macros = {}
 
-    async def update_guild_macros(self, guild_id):
+    @interactions.listen('GUILD_CREATE') # <- na inicialização do bote na criação de uma nova guild
+    async def on_guild_create(self, guild: Guild):
+        await self.update_guild_macros(guild.id)
+
+    async def update_guild_macros(self, guild_id: int):
+        self.guild_macros[guild_id] = self.get_all_macros(guild_id)
+
+    def get_all_macros(self, guild_id: int):
         try:
-            self.guild_macros[guild_id] = list(self.macro_repository.find_all(guild_id))
+            return list(self.macro_repository.find_all(guild_id))
         except Exception as e:
-            logger.error(f"Failed to update macros for guild {guild_id}: {e}")
-            raise
+            logger.error(f"Failed to get all macros for guild {guild_id}: {e}")
+            return []
+        
+    def create_macro(self, guild_id: int, macro_title: str, macro_text: str):
+        macro = self.get_macro_by_title_and_guild_id(macro_title, guild_id)
+        if macro is None:
+            new_macro = Macro(macro_id=uuid.uuid4(), guild_id=guild_id, title=macro_title, text=macro_text)
+            try:
+                self.macro_repository.create_macro(new_macro)
+                logger.info(f"Created new macro {macro_title} for guild {guild_id}")
+                return True
+            except Exception as e:
+                logger.error(f"Failed to create macro {macro_title} for guild {guild_id}: {e}")
+                raise
+        else:
+            logger.warning(f"Macro {macro_title} for guild {guild_id} already exists")
+            return False
+
+    def update_macro(self, macro: Macro):
+        try:
+            self.macro_repository.update_macro(macro.macro_id, macro)
+            return macro
+        except Exception as e:
+            logger.error(f"Failed to update macro {macro.title} for guild {macro.guild_id}: {e}")
+            return None
+
+    def delete_macro(self, macro: Macro):
+        try:
+            self.macro_repository.delete_macro(macro.macro_id)
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delete macro {macro.title} for guild {macro.guild_id}: {e}")
+            return False
 
     @interactions.listen('GUILD_CREATE')
     async def on_guild_create(self, guild: Guild):
@@ -39,29 +84,11 @@ class Macros(Extension):
             logger.error(f"Failed to get macro {macro_title} for guild {guild_id}: {e}")
             raise
 
-    def macro_insert(self, guild_id: int, macro_title: str, macro_text: str):
-        macro = self.get_macro_by_title_and_guild_id(macro_title, guild_id)
-        if macro is None:
-            new_macro = Macro(macro_id=uuid.uuid4(),guild_id=guild_id, title=macro_title, text=macro_text)
-            try:
-                self.macro_repository.create_macro(new_macro)
-            except Exception as e:
-                logger.error(f"Failed to insert macro {macro_title} for guild {guild_id}: {e}")
-                raise
-            return True
-        else:
-            return False
-    
     def trim_text(self, text):
         if len(text) > 900:
             return text[:850] + "..."
         return text
         
-    def find_all_macros(self, guild_id: int):
-        macro_repository = MacroRepository()
-        all_macros = list(macro_repository.find_all(guild_id))
-        return True
-    
     @interactions.slash_command(
         name="macro-add", 
         description="Adiciona uma macro.",
@@ -79,7 +106,7 @@ class Macros(Extension):
         macro_title = modal_ctx.responses["macro-title"]
         macro_text = modal_ctx.responses["macro-text"]
         await modal_ctx.defer()
-        macro_created = self.macro_insert(ctx.guild_id, macro_title, macro_text)
+        macro_created = self.create_macro(ctx.guild_id, macro_title, macro_text)
         if macro_created:
             await self.update_guild_macros(ctx.guild_id)
             await modal_ctx.send(f"Macro **{macro_title}** adicionada.")
@@ -100,26 +127,27 @@ class Macros(Extension):
         ],
     )
     async def macro_edit(self, ctx: interactions.SlashContext, macro: str):
-        find_macro = self.get_macro_by_title_and_guild_id(macro, ctx.guild_id)
-        if find_macro is None:
+        updated_macro = self.get_macro_by_title_and_guild_id(macro, ctx.guild_id)
+        if updated_macro is None:
             await ctx.send(f"A macro **{macro}** não existe neste servidor!")
         else:
-            macro_repository = MacroRepository()
             modal = Modal(
-                ParagraphText(label="Texto da Macro", custom_id="macro-text", placeholder="Edite o texto da macro", value=find_macro.text, required=True, min_length=1, max_length=2000),
+                ParagraphText(label="Texto da Macro", custom_id="macro-text", placeholder="Edite o texto da macro", value=updated_macro.text, required=True, min_length=1, max_length=2000),
                 title="Edite a Macro",
                 custom_id="macro_edit_form"
             )
             await ctx.send_modal(modal)
             modal_ctx: ModalContext = await ctx.bot.wait_for_modal(modal)
             await modal_ctx.defer()
+            
             macro_new_text = modal_ctx.responses["macro-text"]
-            old_macro_text = find_macro.text
-            find_macro.text = macro_new_text
-            macro_repository.update_macro(find_macro.macro_id, find_macro)
+            old_macro_text = updated_macro.text
+            
+            updated_macro.text = macro_new_text
+            self.update_macro(updated_macro)
 
             macro_formated_old_text = self.trim_text(old_macro_text)
-            macro_formated_new_text = self.trim_text(find_macro.text)
+            macro_formated_new_text = self.trim_text(updated_macro.text)
             embed = Embed(
                 title=f"Macro \"{macro}\" editada!",
                 color=0x71368a,
@@ -153,8 +181,7 @@ class Macros(Extension):
         if find_macro is None:
             await ctx.send(f"A macro **{macro}** não existe neste servidor!")
         else:
-            macro_repository = MacroRepository()
-            macro_repository.delete_macro(find_macro.macro_id)
+            self.delete_macro(find_macro)
             await self.update_guild_macros(ctx.guild_id)
             await ctx.send(f"A macro **{macro}** foi deletada!")
 
