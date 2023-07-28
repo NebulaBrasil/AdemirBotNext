@@ -22,10 +22,12 @@ O projeto "Ademir" é um bot criado para melhorar a experiência de comunidades 
 - [ ] Gerar texto com o comando `/completar`
 
 ## Comandos do Administrador
-- [ ] Configurar o Canal de Denúncias: Comando `/config-denuncias`
-- [ ] Criar macros através do comando `/macro`
-- [ ] Editar macros: comando `/editar-macro`
-- [ ] Excluir macro: comando `/excluir-macro`
+- [ ] Configurar o Canal de Denúncias: comando `/config-denuncias`
+- [x] Criar macros: comando `/macro-add`
+- [x] Editar macro: comando `/macro-edit`
+- [x] Excluir macro: comando `/macro-delete`
+- [x]  <b style="color:limegreen">[NOVO]</b> Listar todas as macros: comando `/macro-list`
+- [x] <b style="color:limegreen">[NOVO]</b> Excluir todas as macros: comando `/macro-delete-all`
 - [x] Banir em massa: comando `/massban`
 - [x] Expulsar em massa: comando `/masskick`
 - [ ] Importar histórico de mensagens: comando `/importar-historico-mensagens`
