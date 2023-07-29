@@ -6,7 +6,7 @@ load_dotenv()
 MONGO_URI = os.getenv('MongoServer')
 CERTIFICATE_FILE = os.getenv('CertFile')
 DATABASE_NAME = "ademir"
-PREMIUM_GUILDS = os.getenv('PremiumGuilds')
+PREMIUM_GUILDS = os.getenv('PremiumGuilds').split(',')
 OPENAPI_TOKEN = os.getenv('ChatGPTKey')
 SPOTIFY_CLIENT_ID = os.getenv('SpotifyApiClientId')
 SPOTIFY_CLIENT_SECRET = os.getenv('SpotifyApiClientSecret')

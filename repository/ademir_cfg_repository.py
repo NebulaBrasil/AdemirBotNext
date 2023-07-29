@@ -6,7 +6,7 @@ class AdemirCfgRepository(BaseRepository):
     def __init__(self):
         super().__init__('ademir_cfg')
 
-    def set_guild_conversation_role(self: BaseRepository, guild_id: int, conv_role_id):
+    def set_guild_conversation_role(self, guild_id: int, conv_role_id):
         cfg: AdemirCfg = self.collection.find_one({"GuildId": guild_id})
         if cfg is None:
             cfg = vars(AdemirCfg(
@@ -18,3 +18,7 @@ class AdemirCfgRepository(BaseRepository):
             cfg["AdemirRoleId"] = conv_role_id
         
         self.collection.replace_one({"GuildId": guild_id}, cfg, upsert=True)
+
+    def get_guild_config(self, guild_id: int) -> AdemirCfg:
+        return self.collection.find_one({"GuildId": guild_id})
+       
