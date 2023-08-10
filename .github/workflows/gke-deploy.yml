@@ -36,17 +36,5 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}:${{ github.sha }} .
-        docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}:${{ github.sha }}
-
-    - name: Get GKE Credentials
-      run: gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --zone ${{ env.GKE_ZONE }}
-
-    - name: Delete Previous Deployment
-      run: kubectl delete deployment ademirbot-deployment || true  # O "|| true" evita que a ação falhe se o deployment não existir
-
-    - name: Deploy to GKE
-      run: |
-        kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} ademirbot=gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}:${{ github.sha }}
-        kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }}
-        kubectl get services -o wide
+        docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }} .
+        docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}
