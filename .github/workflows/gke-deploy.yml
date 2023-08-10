@@ -1,10 +1,9 @@
-name: CI/CD for GKE
+name: Deploy to GKE
 
 on:
   push:
     branches:
       - main
-      - hml
 
 env:
   PROJECT_ID: ademirbot-project
@@ -43,10 +42,10 @@ jobs:
       run: gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --zone ${{ env.GKE_ZONE }}
 
     - name: Delete Previous Deployment
-      run: kubectl delete deployment ademirbot-deployment || true  # O "|| true" evita que a ação falhe se o deployment não existir
+      run: kubectl delete deployment ${DEPLOYMENT_NAME} || true
 
     - name: Deploy to GKE
       run: |
-        kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} ademirbot=gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}:${{ github.sha }}
-        kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }}
+        kubectl set image deployment/${DEPLOYMENT_NAME} ademirbot=gcr.io/${PROJECT_ID}/${IMAGE}:${GITHUB_SHA}
+        kubectl rollout status deployment/${DEPLOYMENT_NAME}
         kubectl get services -o wide
