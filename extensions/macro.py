@@ -38,7 +38,7 @@ class Macros(Extension):
     minimize database requests.
 
     """
-
+    """TESTE GITHUB ACTION"""
     @interactions.listen('GUILD_CREATE')
     async def on_guild_create(self, guild: Guild):
         await self.update_guild_macros(guild.id)
@@ -114,7 +114,7 @@ class Macros(Extension):
             macro_formated_old_text = self.trim_text(old_macro_text)
             macro_formated_new_text = self.trim_text(updated_macro.text)
             embed = Embed(
-                title=f"Macro \"{macro}\" editada!",
+                title=f"Macro \"{macro}\" EDITADA!",
                 color=0x71368a,
                 timestamp=datetime.datetime.now(timezone('UTC'))
             )
