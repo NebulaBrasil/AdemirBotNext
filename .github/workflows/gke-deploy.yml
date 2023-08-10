@@ -1,0 +1,36 @@
+name: Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+      - hml
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+      with:
+        project_id: ademirbot-project
+        service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+        export_default_credentials: true
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t gcr.io/ademirbot-project/ademirbot:${{ github.sha }} .
+        gcloud auth configure-docker
+        docker push gcr.io/ademirbot-project/ademirbot:${{ github.sha }}
+
+    - name: Set up kubectl
+      run: gcloud container clusters get-credentials ademirbot-cluster --zone southamerica-east1-a
+
+    - name: Deploy to GKE
+      run: |
+        kubectl set image deployment/ademirbot ademirbot=gcr.io/ademirbot-project/ademirbot:${{ github.sha }}
+        kubectl rollout status deployment/ademirbot
