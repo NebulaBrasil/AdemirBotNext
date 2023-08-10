@@ -173,8 +173,7 @@ class Macros(Extension):
     )
     async def macro_list(self, ctx: interactions.SlashContext):
         guild_id = ctx.guild_id
-        if guild_id not in self.guild_macros:
-            await self.update_guild_macros(guild_id)
+        await self.update_guild_macros(guild_id)
         macros = self.guild_macros.get(guild_id, [])
 
         if not macros:
