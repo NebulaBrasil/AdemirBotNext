@@ -38,6 +38,8 @@ jobs:
       with:
         cluster_name: ${{ env.GKE_CLUSTER }}
         location: ${{ env.GKE_ZONE }}
+        project_id: ademirbot-project  # Pass the project ID directly here
+        credentials: ${{ secrets.GCP_CREDENTIALS }}
 
     # Build the Docker image
     - name: Build
