@@ -15,6 +15,9 @@ spec:
       containers:
       - name: ademirbot
         image: gcr.io/ademirbot-project/ademirbot
+        volumeMounts:
+        - mountPath: /app/certs/cert.pem
+          name: certs
         env:
         - name: AdemirAuth
           valueFrom:
@@ -29,8 +32,6 @@ spec:
         - name: CertFile
           value: /app/certs/cert.pem
       volumes:
-      - name: foo
+      - name: certs
         secret:
           secretName: certfile
-          items:
-          - path: /app/certs/cert.pem
