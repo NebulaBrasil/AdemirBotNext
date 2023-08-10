@@ -98,7 +98,7 @@ class Macros(Extension):
         else:
             modal = Modal(
                 ParagraphText(label="Texto da Macro", custom_id="macro-text", placeholder="Edite o texto da macro", value=updated_macro.text, required=True, min_length=1, max_length=2000),
-                title="Edite a Macro",
+                title="Editeeee a Macro",
                 custom_id="macro_edit_form"
             )
             await ctx.send_modal(modal)
