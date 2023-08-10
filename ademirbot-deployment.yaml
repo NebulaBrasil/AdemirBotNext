@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ademirbot-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ademirbot
+  template:
+    metadata:
+      labels:
+        app: ademirbot
+    spec:
+      containers:
+      - name: ademirbot
+        image: gcr.io/ademirbot-project/ademirbot
+        env:
+        - name: AdemirAuth
+          valueFrom:
+            secretKeyRef:
+              name: ademirauth
+              key: auth
+        - name: MongoServer
+          valueFrom:
+            secretKeyRef:
+              name: db-user
+              key: db-username
+        - name: CertFile
+          value: /app/certs/cert.pem
+      volumes:
+      - name: foo
+        secret:
+          secretName: certfile
+          items:
+          - path: /app/certs/cert.pem
