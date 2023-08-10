@@ -44,6 +44,6 @@ jobs:
 
     - name: Deploy to GKE
       run: |
-        kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} ademirbot=gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}
+        kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} ademirbot=gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}:${{ github.sha }}
         kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }}
         kubectl get services -o wide

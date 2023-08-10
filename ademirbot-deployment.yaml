@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: ademirbot-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: ademirbot
@@ -16,7 +16,7 @@ spec:
       - name: ademirbot
         image: gcr.io/ademirbot-project/ademirbot
         volumeMounts:
-        - mountPath: /app/certs/cert.pem
+        - mountPath: /app/certs
           name: certs
         env:
         - name: AdemirAuth
@@ -27,8 +27,8 @@ spec:
         - name: MongoServer
           valueFrom:
             secretKeyRef:
-              name: db-user
-              key: db-username
+              name: mongoserver
+              key: mongo
         - name: CertFile
           value: /app/certs/cert.pem
       volumes:
