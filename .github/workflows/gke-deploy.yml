@@ -10,7 +10,7 @@ env:
   PROJECT_ID: ademirbot-project
   GKE_CLUSTER: ademirbot-cluster
   GKE_ZONE: southamerica-east1-a
-  DEPLOYMENT_NAME: ademirbot
+  DEPLOYMENT_NAME: ademirbot-deployment
   IMAGE: ademirbot
 
 jobs:
