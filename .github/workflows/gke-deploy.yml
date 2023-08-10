@@ -38,7 +38,7 @@ jobs:
       with:
         cluster_name: ${{ env.GKE_CLUSTER }}
         location: ${{ env.GKE_ZONE }}
-        credentials: ${{ secrets.GCP_CREDENTIALS }}
+        project_id: ${{ env.PROJECT_ID }}
 
     # Build the Docker image
     - name: Build
