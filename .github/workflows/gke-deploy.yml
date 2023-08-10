@@ -27,6 +27,7 @@ jobs:
       with:
         service_account_key: ${{ secrets.GCP_CREDENTIALS }}
         project_id: ${{ env.PROJECT_ID }}
+        install_components: 'gke-gcloud-auth-plugin'
       env:
         CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: ${{ secrets.GCP_CREDENTIALS }}
 
