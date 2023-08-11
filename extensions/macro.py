@@ -94,7 +94,7 @@ class Macros(Extension):
     async def macro_edit(self, ctx: interactions.SlashContext, macro: str):
         updated_macro = self.get_macro_by_title_and_guild_id(macro, ctx.guild_id)
         if updated_macro is None:
-            await ctx.send(f"A macro **{macro}** não existe neste servidor! (wellllL)")
+            await ctx.send(f"A macro **{macro}** não existe neste servidor! (wellllL AUAUAUAU)")
         else:
             modal = Modal(
                 ParagraphText(label="Texto da Macro", custom_id="macro-text", placeholder="Edite o texto da macro", value=updated_macro.text, required=True, min_length=1, max_length=2000),
