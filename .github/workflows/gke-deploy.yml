@@ -12,6 +12,7 @@ env:
   GKE_ZONE: southamerica-east1-a
   DEPLOYMENT_NAME: ademirbot-deployment
   IMAGE: ademirbot
+  SHA: ${{ github.sha }}
 
 jobs:
   build-deploy:
@@ -37,13 +38,13 @@ jobs:
     - name: Build Docker Image
       run: |
         docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }} .
-        docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}:${{ github.sha }}
+        docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}:${{ env.SHA }}
 
     - name: Get GKE Credentials
       run: gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --zone ${{ env.GKE_ZONE }}
 
     - name: Deploy to GKE
       run: |
-        kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} ademirbot=gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}:${{ github.sha }}
+        kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} ademirbot=gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }}:${{ env.SHA }}
         kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }}
         kubectl get services -o wide
