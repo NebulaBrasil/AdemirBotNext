@@ -10,7 +10,7 @@ OPENAPI_TOKEN = os.getenv('ChatGPTKey')
 SPOTIFY_CLIENT_ID = os.getenv('SpotifyApiClientId')
 SPOTIFY_CLIENT_SECRET = os.getenv('SpotifyApiClientSecret')
 TOKEN = os.getenv('AdemirAuth')
-
+PREMIUM_GUILDS = os.getenv('PremiumGuilds').split(',')
 BOT_NAME = "Ademir"
 DESCRICAO_BOT = "Bot"
 PREFIX = ">>"
